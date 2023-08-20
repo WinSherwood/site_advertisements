@@ -3,6 +3,10 @@ from django.db import models
 from django.utils.html import format_html
 from django.contrib import admin
 
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
 
 # Create your models here.
 class Advertisement(models.Model):
@@ -12,6 +16,8 @@ class Advertisement(models.Model):
     trades = models.BooleanField("торг", help_text="Если хотим торговаться")
     date_now = models.DateTimeField("Создание дата", auto_now_add=True)
     date_update = models.DateTimeField("Обновление дата", auto_now=True)
+    image = models.ImageField("Картинка", upload_to='advertisements/')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
     class Meta:
         db_table = "advertisements"
@@ -35,6 +41,20 @@ class Advertisement(models.Model):
         if self.date_update.date() == timezone.now().date():
             updated_time = self.date_update.time().strftime("%H:%M:%S")
             return format_html(
-                '<span style = "color:blue; font-weight: bold;">Сегодня в {}</span>', updated_time
+                '<span style = "color:blue; font-weight: bold;">{}', updated_time
             )
         return self.date_now.strftime("%d.%m.%Y  в  %H:%M:%S")
+
+    @admin.display(description="картинка")
+    def created_foto(self):
+        if self.image:
+            return format_html(
+                '<img src = "/media/{}" style = "width:100px; hight:100px;"> ', self.image
+            )
+        else:
+            return format_html(
+                '<img src = "/static/img/adv.png" style = "width:100px; hight:100px;"> '
+            )
+
+
+

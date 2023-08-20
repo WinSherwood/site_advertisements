@@ -1,10 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
+from django.urls import reverse
+from .models import Advertisement
 from django.http import HttpResponse
-
+from .forms import AdvertisementForm
 
 def index(request):
-    return render(request, "index.html")
+    advertisements = Advertisement.objects.all()
+    context = {"advertisements": advertisements}
+    return render(request, "index.html", context=context)
 
 
 def top(request):
@@ -12,7 +16,18 @@ def top(request):
 
 
 def post(request):
-    return render(request, "advertisement-post.html")
+    if request.method == "POST":
+        form = AdvertisementForm(request.POST, request.FILES)
+        if form.is_valid():
+            advertisement = Advertisement(**form.cleaned_data)
+            advertisement.user = request.users
+            advertisement.save()
+            url = reverse("/")
+            return redirect(url)
+        else:
+            form = AdvertisementForm()
+        context = {"form": form}
+        return render(request, "advertisement-post.html", context=context)
 
 
 def register(request):

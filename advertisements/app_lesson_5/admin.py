@@ -4,12 +4,11 @@ from .models import Advertisement
 
 
 class AdvertisementAdmin(admin.ModelAdmin):
-    list_display = ['title', 'descriptions', 'price', 'trades', 'created_date', 'updated_at']
+    list_display = ['title', 'descriptions', 'price', 'trades', 'created_date', 'updated_at', 'user', 'created_foto']
     list_filter = ['date_now', 'descriptions', 'trades']
     fieldsets = (
         ("Первый блок", {
-            "fields": ("title", "descriptions")}),
-
+            "fields": ("title", "descriptions", "image", "user")}),
         ("Второй блок", {
             "classes": ("collapse",),
             "fields": ("price", "trades")}),
